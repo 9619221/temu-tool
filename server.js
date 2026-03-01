@@ -96,7 +96,53 @@ const riskWarnings = [
   { title: '季节性风险', content: '季节性产品需提前备货，注意库存' },
 ];
 
-// 物流方案
+// 全托管费用计算
+function calculateFullServiceCost(productCost, weight, isOverseas) {
+  //  Simplified calculation
+  const freight = weight * (isOverseas ? 8 : 25); // 海运 vs 空运
+  const serviceFee = productCost * 0.15; // 15% 服务费
+  const platformFee = productCost * 0.21; // 21% 平台抽成
+  
+  return {
+    productCost: productCost,
+    freight: freight.toFixed(2),
+    serviceFee: serviceFee.toFixed(2),
+    platformFee: platformFee.toFixed(2),
+    totalCost: (productCost + freight + serviceFee + platformFee).toFixed(2)
+  };
+}
+
+// TEMU 全托管入驻要求
+const temuRequirements = [
+  { item: '营业执照', required: true, note: '企业或个人工商户' },
+  { item: '产品合规资质', required: true, note: 'CE/FCC/FDA等' },
+  { item: '仓储能力', required: true, note: '国内仓库或全托管' },
+  { item: '发货时效', required: true, note: '48小时内入仓' },
+  { item: '资金实力', required: true, note: '备货资金充足' },
+];
+
+// 全托管物流方案
+const logisticsOptions = [
+  { name: '空运小包', time: '7-12天', cost: '¥15-30/kg', suitable: '轻小件、急货', type: '直发' },
+  { name: '海运', time: '25-35天', cost: '¥3-8/kg', suitable: '大批量、耐储货', type: '直发' },
+  { name: '海外仓', time: '2-5天', cost: '¥20-40/kg', suitable: '高周转产品', type: '托管' },
+  { name: 'TEMU仓库', time: '3-7天', cost: '¥12-25/kg', suitable: '全托管', type: '全托管' },
+];
+
+// 费用计算
+app.post('/api/full-service-cost', (req, res) => {
+  const { productCost, weight, isOverseas } = req.body;
+  const result = calculateFullServiceCost(productCost, weight, isOverseas);
+  res.json(result);
+});
+
+app.get('/api/temu-requirements', (req, res) => {
+  res.json(temuRequirements);
+});
+
+app.get('/api/logistics', (req, res) => {
+  res.json(logisticsOptions);
+});
 const logisticsOptions = [
   { name: '空运小包', time: '7-12天', cost: '¥15-30/kg', suitable: '轻小件、急货' },
   { name: '海运', time: '25-35天', cost: '¥3-8/kg', suitable: '大批量、耐储货' },
