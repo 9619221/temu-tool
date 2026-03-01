@@ -1,0 +1,32 @@
+{
+  "name": "temu-selector",
+  "version": "1.0.0",
+  "description": "TEMU 选品工具 - AI 驱动跨境电商选品决策助手",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "author": "AI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.temu.selector",
+    "productName": "TEMU选品工具",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "files": [
+      "*.js",
+      "public/**/*",
+      "package.json"
+    ]
+  }
+}
