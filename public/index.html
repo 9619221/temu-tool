@@ -2,346 +2,226 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💎 Temu爆品 - 选品神器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>💎 TEMU爆品 - 选品神器</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; }
-    .card { background: rgba(255,255,255,0.95); border-radius: 16px; }
+    * { -webkit-tap-highlight-color: transparent; }
+    body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; padding-bottom: 80px; }
+    .card { background: rgba(255,255,255,0.95); border-radius: 12px; }
     .gradient-text { background: linear-gradient(90deg, #FF6B35, #F7931E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* 底部导航 */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(26,26,46,0.95); backdrop-filter: blur(10px); padding: 8px 0; display: flex; justify-content: space-around; z-index: 100; border-top: 1px solid rgba(255,255,255,0.1); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: #6B7280; font-size: 10px; padding: 4px 12px; }
+    .nav-item.active { color: #FF6B35; }
+    .nav-item span { font-size: 20px; margin-bottom: 2px; }
+    
+    /* 首页 */
+    .page { display: none; }
+    .page.active { display: block; }
   </style>
 </head>
 <body class="text-gray-800">
-  <div class="max-w-7xl mx-auto p-6">
-    <!-- Header -->
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold gradient-text mb-2">🔥 TEMU 选品工具</h1>
-      <p class="text-gray-300">跨境电商选品决策助手 | AI 驱动</p>
-    </header>
+  <!-- Header -->
+  <header class="text-center py-4 px-4">
+    <h1 class="text-2xl font-bold gradient-text">🔥 TEMU爆品</h1>
+    <p class="text-gray-400 text-xs">跨境电商选品决策助手</p>
+  </header>
 
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-4 gap-4 mb-8">
-      <div class="card p-4 text-center">
-        <div class="text-3xl font-bold text-orange-500">8</div>
-        <div class="text-gray-500">热门品类</div>
+  <!-- 页面内容 -->
+  <div class="px-4">
+    
+    <!-- 首页 -->
+    <div id="page-home" class="page active">
+      <!-- 搜索 -->
+      <div class="card p-4 mb-4">
+        <input type="text" placeholder="🔍 搜索产品..." class="w-full p-3 border rounded-xl text-sm">
       </div>
-      <div class="card p-4 text-center">
-        <div class="text-3xl font-bold text-green-500">+15%</div>
-        <div class="text-gray-500">平均增长</div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-3xl font-bold text-blue-500">68%</div>
-        <div class="text-gray-500">平均利润率</div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-3xl font-bold text-purple-500">8</div>
-        <div class="text-gray-500">热销产品</div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-6 mb-6">
-      <!-- 利润计算器 -->
-      <div class="card p-6">
-        <h2 class="text-xl font-bold mb-4 flex items-center">
-          <span class="text-2xl mr-2">🧮</span> 利润计算器
-        </h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">采购价 (¥)</label>
-            <input type="number" id="priceCNY" value="15" class="w-full p-2 border rounded-lg">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">物流费 (¥)</label>
-            <input type="number" id="shippingCNY" value="5" class="w-full p-2 border rounded-lg">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">平台抽成 (%)</label>
-            <input type="number" id="platformRate" value="21" class="w-full p-2 border rounded-lg">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">退货率 (%)</label>
-            <input type="number" id="returnRate" value="10" class="w-full p-2 border rounded-lg">
-          </div>
+      
+      <!-- 快捷功能 -->
+      <div class="grid grid-cols-4 gap-2 mb-4">
+        <div class="card p-3 text-center" onclick="showPage('profit')">
+          <div class="text-2xl">🧮</div>
+          <div class="text-xs mt-1">利润计算</div>
         </div>
-        <div class="mt-4">
-          <label class="block text-sm font-medium mb-1">美国售价 ($)</label>
-          <input type="number" id="usdPrice" value="29.99" class="w-full p-2 border rounded-lg">
+        <div class="card p-3 text-center" onclick="showPage('category')">
+          <div class="text-2xl">📈</div>
+          <div class="text-xs mt-1">热门品类</div>
         </div>
-        <button onclick="calculate()" class="w-full mt-4 bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition">
-          计算利润
-        </button>
-        <div id="result" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div>人民币售价:</div><div class="font-bold" id="res-rmb">¥0</div>
-            <div>平台收入:</div><div class="font-bold" id="res-platform">¥0</div>
-            <div>总成本:</div><div class="font-bold" id="res-cost">¥0</div>
-            <div>退货损失:</div><div class="font-bold" id="res-return">¥0</div>
-            <div class="col-span2 border-t pt-2 mt-2">
-              <div class="text-center">
-                <div class="text-lg font-bold" id="res-profit">¥0</div>
-                <div class="text-sm" id="res-rate">利润率: 0%</div>
-              </div>
-            </div>
-          </div>
+        <div class="card p-3 text-center" onclick="showPage('product')">
+          <div class="text-2xl">🛍️</div>
+          <div class="text-xs mt-1">热销产品</div>
+        </div>
+        <div class="card p-3 text-center" onclick="showPage('ai')">
+          <div class="text-2xl">🤖</div>
+          <div class="text-xs mt-1">AI生图</div>
         </div>
       </div>
+      
+      <!-- 推荐 -->
+      <div class="card p-4">
+        <h3 class="font-bold mb-3">💡 今日推荐</h3>
+        <div class="space-y-2" id="recommendations"></div>
+      </div>
+    </div>
 
-      <!-- 热门品类 -->
-      <div class="card p-6">
-        <h2 class="text-xl font-bold mb-4 flex items-center">
-          <span class="text-2xl mr-2">📈</span> 热门品类
-        </h2>
-        <div class="space-y-2" id="categories">
-          <div class="animate-pulse flex justify-between p-3 bg-gray-100 rounded">
-            <div class="h-4 bg-gray-300 rounded w-24"></div>
-            <div class="h-4 bg-gray-300 rounded w-12"></div>
-          </div>
+    <!-- 利润计算 -->
+    <div id="page-profit" class="page">
+      <div class="card p-4">
+        <h2 class="font-bold mb-4">🧮 利润计算器</h2>
+        <div class="space-y-3">
+          <input type="number" id="p-price" placeholder="采购价 ¥" class="w-full p-3 border rounded-xl">
+          <input type="number" id="p-ship" placeholder="物流费 ¥" class="w-full p-3 border rounded-xl">
+          <input type="number" id="p-rate" placeholder="平台抽成 %" value="21" class="w-full p-3 border rounded-xl">
+          <input type="number" id="p-return" placeholder="退货率 %" value="10" class="w-full p-3 border rounded-xl">
+          <input type="number" id="p-usd" placeholder="美国售价 $" class="w-full p-3 border rounded-xl">
+          <button onclick="calcProfit()" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold">计算</button>
         </div>
+        <div id="profit-result" class="mt-4 p-3 bg-gray-50 rounded-xl hidden"></div>
       </div>
     </div>
 
-    <!-- 产品搜索 -->
-    <div class="card p-6 mb-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">🔍</span> 产品搜索
-      </h2>
-      <div class="flex gap-2 mb-4">
-        <input type="text" id="searchInput" placeholder="输入产品关键词..." class="flex-1 p-2 border rounded-lg">
-        <button onclick="searchProducts()" class="bg-orange-500 text-white px-4 rounded-lg">搜索</button>
-      </div>
-      <div id="searchResults" class="text-gray-500 text-center py-4">
-        输入关键词搜索竞品数据
+    <!-- 品类 -->
+    <div id="page-category" class="page">
+      <div class="card p-4">
+        <h2 class="font-bold mb-3">📈 热门品类</h2>
+        <div class="space-y-2" id="category-list"></div>
       </div>
     </div>
 
-    <!-- 热销产品 -->
-    <div class="card p-6 mb-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">🛍️</span> 热销产品榜
-      </h2>
-      <div class="grid grid-cols-4 gap-4" id="products"></div>
-    </div>
-
-    <!-- 品类趋势 -->
-    <div class="card p-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">📊</span> 品类趋势
-      </h2>
-      <div class="text-center text-gray-500 py-8">
-        📈 趋势图表展示区域<br>
-        <span class="text-sm">（数据采集中...）</span>
+    <!-- 产品 -->
+    <div id="page-product" class="page">
+      <div class="card p-4">
+        <h2 class="font-bold mb-3">🛍️ 热销产品</h2>
+        <div class="grid grid-cols-2 gap-2" id="product-list"></div>
       </div>
     </div>
 
-    <!-- 选品建议 -->
-    <div class="card p-6 mt-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">💡</span> 选品建议
-      </h2>
-      <div class="space-y-3" id="recommendations">
-        <div class="animate-pulse p-3 bg-gray-100 rounded-lg"></div>
+    <!-- AI生图 -->
+    <div id="page-ai" class="page">
+      <div class="card p-4">
+        <h2 class="font-bold mb-3">🤖 AI 生图</h2>
+        <textarea id="ai-prompt" placeholder="描述你想要的产品图..." class="w-full p-3 border rounded-xl h-24"></textarea>
+        <button onclick="generateImage()" class="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-bold mt-3">生成图片</button>
+        <div id="ai-result" class="mt-4 text-center"></div>
       </div>
     </div>
 
-    <!-- 风险提示 -->
-    <div class="card p-6 mt-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">⚠️</span> 风险提示
-      </h2>
-      <div class="space-y-2" id="risks">
-        <div class="animate-pulse p-3 bg-gray-100 rounded-lg"></div>
-      </div>
-    </div>
-
-    <!-- 物流方案 -->
-    <div class="card p-6 mt-6">
-      <h2 class="text-xl font-bold mb-4 flex items-center">
-        <span class="text-2xl mr-2">🚚</span> 物流方案
-      </h2>
-      <div class="space-y-2" id="logistics">
-        <div class="animate-pulse p-3 bg-gray-100 rounded-lg"></div>
-      </div>
-    </div>
-
-    <footer class="text-center mt-8 text-gray-400 text-sm">
-      <p>Made by 🐙 Developer for 陈嘉林 | AI Team</p>
-    </footer>
   </div>
 
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home')">
+      <span>🏠</span>
+      首页
+    </div>
+    <div class="nav-item" onclick="showPage('profit')">
+      <span>🧮</span>
+      计算
+    </div>
+    <div class="nav-item" onclick="showPage('category')">
+      <span>📈</span>
+      品类
+    </div>
+    <div class="nav-item" onclick="showPage('product')">
+      <span>🛍️</span>
+      产品
+    </div>
+    <div class="nav-item" onclick="showPage('ai')">
+      <span>🤖</span>
+      AI
+    </div>
+  </nav>
+
   <script>
-    async function calculate() {
-      const data = {
-        priceCNY: document.getElementById('priceCNY').value,
-        shippingCNY: document.getElementById('shippingCNY').value,
-        platformRate: document.getElementById('platformRate').value,
-        returnRate: document.getElementById('returnRate').value,
-        usdPrice: document.getElementById('usdPrice').value
-      };
-      
-      try {
-        const res = await fetch('/api/profit', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(data)
-        });
-        const r = await res.json();
-        
-        document.getElementById('res-rmb').textContent = '¥' + r.rmbPrice;
-        document.getElementById('res-platform').textContent = '¥' + r.platformIncome;
-        document.getElementById('res-cost').textContent = '¥' + r.totalCost;
-        document.getElementById('res-return').textContent = '¥' + r.returnLoss;
-        document.getElementById('res-profit').textContent = '¥' + r.netProfit;
-        document.getElementById('res-rate').textContent = '利润率: ' + r.profitRate + '%';
-        
-        const profitEl = document.getElementById('res-profit');
-        profitEl.className = 'text-lg font-bold ' + (r.isProfitable ? 'text-green-500' : 'text-red-500');
-        
-        document.getElementById('result').classList.remove('hidden');
-      } catch(e) {
-        alert('计算失败');
-      }
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.target.closest('.nav-item').classList.add('active');
     }
 
-    async function loadCategories() {
+    // 加载数据
+    async function loadData() {
       try {
-        const res = await fetch('/api/categories');
-        const cats = await res.json();
-        
-        const colors = {
-          '高': 'text-red-500',
-          '中': 'text-yellow-500', 
-          '低': 'text-green-500'
-        };
-        
-        document.getElementById('categories').innerHTML = cats.map(c => `
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
-            <div>
-              <span class="font-medium">${c.name}</span>
-              <span class="text-green-500 text-sm ml-2">${c.growth}</span>
-              <span class="text-gray-400 text-xs ml-2">${c.products} 商品</span>
-            </div>
-            <div class="text-right">
-              <span class="text-xs ${colors[c.competition]}">${c.competition}竞争</span>
-            </div>
+        const cats = await fetch('/api/categories').then(r => r.json());
+        document.getElementById('category-list').innerHTML = cats.map(c => `
+          <div class="flex justify-between p-2 bg-gray-50 rounded-lg">
+            <span>${c.name}</span>
+            <span class="text-green-500">${c.growth}</span>
           </div>
         `).join('');
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    async function loadProducts() {
-      try {
-        const res = await fetch('/api/products');
-        const prods = await res.json();
         
-        document.getElementById('products').innerHTML = prods.map(p => `
-          <div class="border rounded-lg p-3 hover:shadow-lg transition cursor-pointer">
-            <div class="bg-gradient-to-br from-orange-100 to-pink-100 h-24 rounded mb-2 flex items-center justify-center text-3xl">
-              🛍️
-            </div>
-            <div class="font-medium text-sm truncate">${p.name}</div>
+        const prods = await fetch('/api/products').then(r => r.json());
+        document.getElementById('product-list').innerHTML = prods.slice(0,6).map(p => `
+          <div class="border rounded-lg p-2">
+            <div class="bg-gray-100 h-20 rounded-lg flex items-center justify-center text-2xl">🛍️</div>
+            <div class="text-xs mt-1 font-medium">${p.name}</div>
             <div class="text-orange-500 font-bold">$${p.price}</div>
-            <div class="text-green-500 text-xs">销量 ${p.sales.toLocaleString()}+</div>
-            <div class="text-gray-400 text-xs">${p.category} | 利润率 ${p.margin}</div>
           </div>
         `).join('');
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    loadCategories();
-    loadProducts();
-    loadRecommendations();
-    loadRisks();
-    loadLogistics();
-
-    async function loadRecommendations() {
-      try {
-        const res = await fetch('/api/recommendations');
-        const data = await res.json();
         
-        const colors = {
-          '高': 'green',
-          '中': 'blue',
-          '低': 'purple'
-        };
-        
-        document.getElementById('recommendations').innerHTML = data.map(r => `
-          <div class="p-3 bg-${colors[r.profit]}-50 border border-${colors[r.profit]}-200 rounded-lg">
-            <div class="font-bold text-${colors[r.profit]}-700">🔥 ${r.category}</div>
-            <div class="text-sm text-${colors[r.profit]}-600">增长率 ${r.growth} | 竞争度 ${r.competition} | 利润率 ${r.profit}</div>
-            <div class="text-xs text-gray-500 mt-1">建议：${r.tips}</div>
+        const recs = await fetch('/api/recommendations').then(r => r.json());
+        document.getElementById('recommendations').innerHTML = recs.slice(0,3).map(r => `
+          <div class="p-2 bg-orange-50 rounded-lg">
+            <div class="font-bold text-sm">🔥 ${r.category}</div>
+            <div class="text-xs text-gray-500">${r.tips}</div>
           </div>
         `).join('');
-      } catch(e) {
-        console.error(e);
-      }
+      } catch(e) { console.log(e); }
     }
 
-    async function loadRisks() {
-      try {
-        const res = await fetch('/api/risks');
-        const data = await res.json();
-        
-        document.getElementById('risks').innerHTML = data.map(r => `
-          <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <div class="font-bold text-red-700">⚠️ ${r.title}</div>
-            <div class="text-sm text-red-600">${r.content}</div>
-          </div>
-        `).join('');
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    async function loadLogistics() {
-      try {
-        const res = await fetch('/api/logistics');
-        const data = await res.json();
-        
-        document.getElementById('logistics').innerHTML = data.map(l => `
-          <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div class="font-bold text-blue-700">🚚 ${l.name}</div>
-            <div class="text-sm text-blue-600">时效: ${l.time} | 成本: ${l.cost}</div>
-            <div class="text-xs text-gray-500 mt-1">适合: ${l.suitable}</div>
-          </div>
-        `).join('');
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    async function searchProducts() {
-      const keyword = document.getElementById('searchInput').value;
-      if (!keyword) return;
+    function calcProfit() {
+      const price = parseFloat(document.getElementById('p-price').value) || 0;
+      const ship = parseFloat(document.getElementById('p-ship').value) || 0;
+      const rate = parseFloat(document.getElementById('p-rate').value) || 21;
+      const ret = parseFloat(document.getElementById('p-return').value) || 10;
+      const usd = parseFloat(document.getElementById('p-usd').value) || 0;
       
-      const resultsDiv = document.getElementById('searchResults');
-      resultsDiv.innerHTML = '<div class="text-center py-4">🔍 搜索中...</div>';
+      const rmb = usd * 7.2;
+      const income = rmb * (1 - rate/100);
+      const cost = price + ship;
+      const loss = rmb * (ret/100);
+      const profit = income - cost - loss;
+      const profitRate = ((profit/income)*100).toFixed(1);
       
-      // 模拟搜索结果
-      setTimeout(() => {
-        const mockResults = [
-          { name: keyword + ' Pro', price: 19.99, sales: 5200, competition: '中' },
-          { name: keyword + ' 经典款', price: 12.99, sales: 3800, competition: '高' },
-          { name: keyword + ' 迷你版', price: 9.99, sales: 2100, competition: '低' },
-        ];
-        
-        resultsDiv.innerHTML = mockResults.map(p => `
-          <div class="flex justify-between items-center p-3 border-b">
-            <div>
-              <div class="font-medium">${p.name}</div>
-              <div class="text-xs text-gray-500">销量 ${p.sales.toLocaleString()}+</div>
-            </div>
-            <div class="text-right">
-              <div class="text-orange-500 font-bold">$${p.price}</div>
-              <div class="text-xs ${p.competition === '高' ? 'text-red-500' : p.competition === '中' ? 'text-yellow-500' : 'text-green-500'}">${p.competition}竞争</div>
-            </div>
-          </div>
-        `).join('');
-      }, 500);
+      document.getElementById('profit-result').innerHTML = `
+        <div class="text-center">
+          <div class="text-2xl font-bold ${profit>0?'text-green-500':'text-red-500'}">¥${profit.toFixed(2)}</div>
+          <div class="text-sm">利润率: ${profitRate}%</div>
+        </div>
+      `;
+      document.getElementById('profit-result').classList.remove('hidden');
     }
+
+    function generateImage() {
+      const prompt = document.getElementById('ai-prompt').value;
+      if(!prompt) return alert('请输入描述');
+      
+      document.getElementById('ai-result').innerHTML = '<div class="p-4 text-center">🤖 正在生成图片...</div>';
+      
+      fetch('/api/ai-image', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({prompt: prompt})
+      })
+      .then(r => r.json())
+      .then(data => {
+        if(data.error) {
+          document.getElementById('ai-result').innerHTML = '<div class="p-4 text-red-500">'+data.error+'</div>';
+        } else {
+          document.getElementById('ai-result').innerHTML = '<div class="p-4">✅ 已提交生成请求<br>ID: '+data.id+'</div>';
+        }
+      })
+      .catch(e => {
+        document.getElementById('ai-result').innerHTML = '<div class="p-4 text-red-500">生成失败</div>';
+      });
+    }
+
+    loadData();
   </script>
 </body>
 </html>
